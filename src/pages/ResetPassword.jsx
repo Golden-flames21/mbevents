@@ -28,14 +28,13 @@ const ResetPassword = () => {
   const token = urlParams.get("token");
 
   const url = "https://mbevents-server.onrender.com/api/v1/reset-password";
-  const url2 = "http://localhost:3000/api/v1/reset-password";
   const onSubmit = async (data) => {
     // Handle form submission logic here
     if (token) {
       const newPassword = data.password;
       const body = { newPassword, token };
       try {
-        const result = await axios.post(url2, body);
+        const result = await axios.post(url, body);
         if (result.status === 200) {
           toast.success("Password reset successful");
           redirect("/login");
