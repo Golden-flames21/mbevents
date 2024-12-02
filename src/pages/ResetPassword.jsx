@@ -13,7 +13,7 @@ const ResetPassword = () => {
   const [show2, setShow2] = useState(false);
   const toggleShow = () => setShow(!show);
   const toggleShow2 = () => setShow2(!show2);
-  const redirect = useNavigate();
+  const redirect = useNavigate()
   const {
     register,
     handleSubmit,
@@ -35,10 +35,10 @@ const ResetPassword = () => {
       const newPassword = data.password;
       const body = { newPassword, token };
       try {
-        const result = await axios.post(url, body);
-        if (result.status === 200) {
-          toast.success("Password reset successful");
-          redirect("/login");
+        const result = await axios.post(url, body)
+        if (result.status === 200){
+          toast.success('Password reset successful')
+          redirect('/login')
         }
       } catch (error) {
         toast.error(error?.response?.data?.message || error?.message, {
