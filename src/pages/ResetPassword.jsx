@@ -28,7 +28,7 @@ const ResetPassword = () => {
   const token = urlParams.get("token");
   console.log({ token });
 
-  const url = "https://mbevents-server.onrender.com/api/v1/forgot-password";
+  const url = "https://mbevents-server.onrender.com/api/v1/reset-password";
   const onSubmit = async (data) => {
     // Handle form submission logic here
     if (token) {
