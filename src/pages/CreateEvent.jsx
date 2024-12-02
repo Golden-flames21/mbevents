@@ -14,6 +14,7 @@ const CreateEvent = () => {
   const [tagInput, setTagInput] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
+    title: "",
     date: "",
     startTime: "",
     endTime: "",
@@ -70,17 +71,12 @@ const CreateEvent = () => {
     }
 
     // Append the tags array as a stringified JSON
-    formDataToSend.append("tags", JSON.stringify(tags));
+    formDataToSend.append("tags", tags);
 
     // Append online and free fields
     formDataToSend.append("online", online);
     formDataToSend.append("free", free);
     formDataToSend.append("image", file);
-
-    // Debugging: Log the formData entries
-    for (let pair of formDataToSend.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
 
     // Make the API request (you can use fetch/axios here)
   };
@@ -134,7 +130,21 @@ const CreateEvent = () => {
               )}
             </div>
           </div>
+          {/* TITLE */}
+          <div className="mt-3">
+            <label htmlFor="title" className="form-label fs-4 fw-semibold">
+              Title
+            </label>
 
+            <input
+              style={{ width: "279px" }}
+              required
+              id="title"
+              type="text"
+              className="form-control bg-secondary-subtle py-2 shadow-none"
+              placeholder="Event Title"
+            />
+          </div>
           {/* Date and Time */}
           <div className="mt-3">
             <label className="form-label fs-4 fw-semibold">
@@ -145,6 +155,7 @@ const CreateEvent = () => {
                 Date
               </label>
               <input
+                required
                 id="date"
                 type="date"
                 className="form-control shadow-none bg-secondary-subtle py-2"
@@ -159,6 +170,7 @@ const CreateEvent = () => {
                   Time (Start)
                 </label>
                 <input
+                  required
                   id="start"
                   type="time"
                   className="form-control shadow-none bg-secondary-subtle py-2"
