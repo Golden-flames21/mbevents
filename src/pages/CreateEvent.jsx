@@ -3,8 +3,11 @@ import Layout from "../components/Layout";
 import { MdCancel, MdLocationPin } from "react-icons/md";
 import ActionBtn from "../components/ActionBtn";
 import SuccessModal from "../components/SuccessModal";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const CreateEvent = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [online, setOnline] = useState(false);
   const [file, setFile] = useState(null);
   const [free, setFree] = useState(false);
@@ -58,9 +61,11 @@ const CreateEvent = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  const handleSubmit = (e) => {
+  const url = "https://mbevents-server.onrender.com/api/v1/events";
+  const token = localStorage.getItem("mb-token");
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const formDataToSend = new FormData();
 
     // Append all formData fields
@@ -79,11 +84,44 @@ const CreateEvent = () => {
     formDataToSend.append("image", file);
 
     // Make the API request (you can use fetch/axios here)
+    try {
+      const result = await axios.post(url, formDataToSend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (result.status === 201) {
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || error?.message);
+    } finally {
+      setIsSubmitting(false);
+      setFree(false);
+      setOnline(false);
+      setImgPreview(null);
+      setFile(null);
+      setFormData({
+        title: "",
+        date: "",
+        startTime: "",
+        endTime: "",
+        location: "",
+        description: "",
+        category: "",
+        regularPrice: "",
+        vipPrice: "",
+      });
+      setTags([]);
+    }
   };
 
   return (
     <Layout>
-      {showModal && <SuccessModal showModal={showModal} />}
+      {showModal && (
+        <SuccessModal showModal={showModal} setShowModal={setShowModal} />
+      )}
       <div className="container my-4">
         <h2 className="fs-4">Create Event</h2>
         <form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -137,12 +175,15 @@ const CreateEvent = () => {
             </label>
 
             <input
+              onChange={handleChange}
               style={{ width: "279px" }}
               required
               id="title"
+              name="title"
               type="text"
               className="form-control bg-secondary-subtle py-2 shadow-none"
               placeholder="Event Title"
+              value={formData.title}
             />
           </div>
           {/* Date and Time */}
@@ -155,6 +196,7 @@ const CreateEvent = () => {
                 Date
               </label>
               <input
+                value={formData.date}
                 required
                 id="date"
                 type="date"
@@ -176,6 +218,7 @@ const CreateEvent = () => {
                   className="form-control shadow-none bg-secondary-subtle py-2"
                   name="startTime"
                   onChange={handleChange}
+                  value={formData.startTime}
                   style={{ width: "279px" }}
                 />
               </div>
@@ -189,6 +232,7 @@ const CreateEvent = () => {
                   className="form-control shadow-none bg-secondary-subtle py-2"
                   name="endTime"
                   onChange={handleChange}
+                  value={formData.endTime}
                   style={{ width: "279px" }}
                 />
               </div>
@@ -213,6 +257,7 @@ const CreateEvent = () => {
                 placeholder="Enter Location"
                 name="location"
                 disabled={online}
+                value={formData.location}
                 onChange={handleChange}
               />
               <div className="form-check form-check-reverse form-switch">
@@ -246,6 +291,7 @@ const CreateEvent = () => {
               rows="12"
               name="description"
               onChange={handleChange}
+              value={formData.description}
             ></textarea>
           </div>
 
@@ -267,6 +313,7 @@ const CreateEvent = () => {
                   className="form-select shadow-none border border-1 py-2"
                   name="category"
                   onChange={handleChange}
+                  value={formData.category}
                   style={{ width: "241px" }}
                 >
                   <option value="">Category</option>
@@ -352,6 +399,7 @@ const CreateEvent = () => {
                     className="form-control shadow-none bg-secondary-subtle py-2"
                     name="regularPrice"
                     onChange={handleChange}
+                    value={formData.regularPrice}
                     placeholder="Enter Regular Price"
                   />
                 </div>
@@ -367,6 +415,7 @@ const CreateEvent = () => {
                     type="number"
                     className="form-control shadow-none bg-secondary-subtle py-2"
                     name="vipPrice"
+                    value={formData.vipPrice}
                     onChange={handleChange}
                     placeholder="Enter VIP Price"
                   />
@@ -384,7 +433,12 @@ const CreateEvent = () => {
             >
               Cancel
             </button>
-            <ActionBtn type="submit" width={"172px"} content="Create Event" />
+            <ActionBtn
+              type="submit"
+              width={"172px"}
+              content={isSubmitting ? "Creating event...." : "Create Event"}
+              className={isSubmitting ? "bg-secondary" : "specialbtn"}
+            />
           </div>
         </form>
       </div>

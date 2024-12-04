@@ -11,6 +11,6 @@ const ActionBtn = ({ content, width, className = "", type, handleClick }) => {
       {content}
     </button>
   );
-}; 
+};
 
 export default ActionBtn;
